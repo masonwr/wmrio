@@ -5,6 +5,7 @@ pub struct PathManager {
     pub project_root: String,
 }
 
+// TODO: convert this to a set of functions backed by lazy static
 impl PathManager {
     pub fn from_env() -> anyhow::Result<Self> {
         let project_root = env::var("CARGO_MANIFEST_DIR")?;

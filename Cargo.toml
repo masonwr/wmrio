@@ -8,7 +8,11 @@ default-run = "serve"
 
 [[bin]]
 name = "serve"
-path = "src/serve/main.rs"
+path = "src/bin/serve.rs"
+
+[lib]
+name = "wmrio"
+path = "src/lib.rs"
 
 [dependencies]
 anyhow = "1.0.0"

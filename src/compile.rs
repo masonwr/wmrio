@@ -1,5 +1,6 @@
 use std::os::unix::fs::symlink;
-use std::{env, fs};
+use std::path::Path;
+use std::{env, fs, io};
 use tera::{Context, Tera};
 
 use crate::{content::Site, path_manager::PathManager};
@@ -10,7 +11,7 @@ pub fn build_site(site: &Site) -> anyhow::Result<()> {
     env::set_current_dir(&pm.project_root)?;
 
     // build tera templater
-    // todo: derive the template path from the incoming site struct
+    // TODO: derive the template path from the incoming site struct
     // parsed from config
     let template_path = format!("{}/templates/**/*.html", pm.theme_root().display());
     let tera = Tera::new(&template_path)?;
@@ -32,12 +33,22 @@ pub fn build_site(site: &Site) -> anyhow::Result<()> {
     let rendered_index = tera.render("index.html", &Context::from_serialize(&site)?)?;
     fs::write(out_index, rendered_index)?;
 
-    // link static asset dir to build asset
-    // TODO update this to copy assets
-    let out_static = pm.out_static_path();
-    if !out_static.exists() {
-        symlink(&pm.theme_static_path(), out_static)?;
-    }
+    // cp static asset folder
+    copy_dir_all(&pm.theme_static_path(), pm.out_static_path())?;
 
+    Ok(())
+}
+
+fn copy_dir_all(src: impl AsRef<Path>, dst: impl AsRef<Path>) -> io::Result<()> {
+    fs::create_dir_all(&dst)?;
+    for entry in fs::read_dir(src)? {
+        let entry = entry?;
+        let ty = entry.file_type()?;
+        if ty.is_dir() {
+            copy_dir_all(entry.path(), dst.as_ref().join(entry.file_name()))?;
+        } else {
+            fs::copy(entry.path(), dst.as_ref().join(entry.file_name()))?;
+        }
+    }
     Ok(())
 }

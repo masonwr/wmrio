@@ -1,4 +1,3 @@
-use std::os::unix::fs::symlink;
 use std::path::Path;
 use std::{env, fs, io};
 use tera::{Context, Tera};

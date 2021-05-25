@@ -2,7 +2,7 @@ use std::os::unix::fs::symlink;
 use std::{env, fs};
 use tera::{Context, Tera};
 
-use wmrio::path_manager::PathManager;
+use wmrio::{content, path_manager::PathManager};
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
@@ -13,17 +13,24 @@ async fn main() -> anyhow::Result<()> {
     let template_path = format!("{}/templates/**/*.html", pm.theme_root().display());
 
     let tera = Tera::new(&template_path)?;
-
-    let mut context = Context::new();
-    context.insert("title", "wmrio");
-    context.insert("world", "World");
-
-    let rendered = tera.render("index.html", &context)?;
+    let site = content::parse_site()?;
 
     // write out, and then server
     fs::create_dir_all(&pm.out_path())?;
+    fs::create_dir_all(format!("{}/posts", &pm.out_path().display()))?;
+
+    for post in &site.posts {
+        let rendered_post = tera.render("post.html", &Context::from_serialize(post)?)?;
+        let mut post_path = pm.out_path();
+        post_path.push("posts");
+
+        let f_out = format!("{}/{}.html", post_path.display(), &post.slug);
+        fs::write(f_out, rendered_post)?;
+    }
+
     let out_index = format!("{}/index.html", pm.out_path().display());
-    fs::write(out_index, rendered)?;
+    let rendered_index = tera.render("index.html", &Context::from_serialize(&site)?)?;
+    fs::write(out_index, rendered_index)?;
 
     // link static asset dir to build asset
     // Not: this is only sutable for the serve cmd.

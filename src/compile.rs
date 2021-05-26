@@ -22,7 +22,11 @@ pub fn build_site(site: &Site) -> anyhow::Result<()> {
 
     // render posts
     for post in &site.posts {
-        let rendered_post = tera.render("post.html", &Context::from_serialize(post)?)?;
+        let mut context = Context::from_serialize(post)?;
+        context.insert("site_title", &site.site_title);
+
+        let rendered_post = tera.render("post.html", &context)?;
+
         let f_out = format!("{}/{}.html", &posts_dir, &post.slug);
         fs::write(f_out, rendered_post)?;
     }

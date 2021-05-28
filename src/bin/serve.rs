@@ -1,11 +1,11 @@
 use std::env;
 
-use wmrio::{compile, content, path_manager::PathManager};
+use wmrio::{content, path_manager::PathManager, render};
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
     let site = content::parse_site()?;
-    compile::build_site(&site)?;
+    render::site(&site)?;
 
     // serve up site
     println!("listening on 'http://localhost:3030'");

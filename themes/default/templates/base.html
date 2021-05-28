@@ -5,13 +5,29 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="static/main.css">
+    <link rel="stylesheet" href="/static/main.css">
     <link rel="stylesheet" href="https://unpkg.com/tachyons@4/css/tachyons.min.css">
     <title>{{site_title}} {% block title %}{% endblock title %}</title>
 </head>
 
 <body>
-    <div>{%block content%}{% endblock content%}</div>
+    {# pull into block #}
+    <nav class="dt w-100 border-box pa3 ph5-ns">
+        <h2 class="ttu tracked">
+            <a class="link dark-gray" href="/">
+                {{site_title}}
+            </a>
+        </h2>
+        <div class="dtc v-mid w-75 tr">
+            {% for nav in top_nav %}
+            <a class="link dim dark-gray f6 f5-ns dib mr3 mr4-ns" href="{{nav.link}}" title="{{nav.display}}">
+                {{nav.display}}
+            </a>
+            {% endfor %}
+        </div>
+    </nav>
+    {# pull into block #}
+    <div class="pa3 ph5-ns">{%block content%}{% endblock content%}</div>
 </body>
 
 </html>

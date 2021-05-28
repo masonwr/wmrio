@@ -2,7 +2,7 @@ use serde::Serialize;
 
 pub fn parse_site() -> anyhow::Result<Site> {
     let site = Site {
-        site_title: "wmrio".into(),
+        site_title: "wmr.io".into(),
         posts: vec![
             Post {
                 slug: "post1".into(),

@@ -1,7 +1,7 @@
 use crate::path_manager::PathManager;
 use comrak::{markdown_to_html, ComrakOptions};
 use serde::{Deserialize, Serialize};
-use std::{env, fs, io};
+use std::fs;
 
 pub fn parse_site() -> anyhow::Result<Site> {
     let pm = PathManager::from_env()?;
@@ -29,12 +29,12 @@ pub fn parse_site() -> anyhow::Result<Site> {
             )
         })?;
 
-        let meta: ContentMeta = serde_yaml::from_str(&yaml).or_else(|e| {
-            Err(anyhow::anyhow!(
+        let meta: ContentMeta = serde_yaml::from_str(&yaml).map_err(|e| {
+            anyhow::anyhow!(
                 "post '{}' had malformed front matter: {}.",
                 file.path().display(),
                 e,
-            ))
+            )
         })?;
 
         let html = markdown_to_html(&content, &parsing_opts);
@@ -47,7 +47,7 @@ pub fn parse_site() -> anyhow::Result<Site> {
 
     let site = Site {
         site_title: "wmr.io".into(),
-        posts: posts,
+        posts,
     };
 
     Ok(site)
@@ -73,7 +73,7 @@ pub struct Site {
     pub posts: Vec<Post>,
 }
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct ContentMeta {
     pub title: String,
     pub slug: String,

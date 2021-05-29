@@ -14,7 +14,8 @@ pub fn site(site: &Site) -> anyhow::Result<()> {
     // TODO: derive the template path from the incoming site struct
     // parsed from config
     let template_path = format!("{}/templates/**/*.html", pm.theme_root().display());
-    let tera = Tera::new(&template_path)?;
+    let mut tera = Tera::new(&template_path)?;
+    tera.autoescape_on(vec![]);
 
     // create dirs if they do not exist
     // TODO this should also be derived from the site perhaps
@@ -32,7 +33,7 @@ pub fn site(site: &Site) -> anyhow::Result<()> {
 
         let rendered_post = tera.render("post.html", &base_context)?;
 
-        let f_out = format!("{}/{}.html", &posts_dir, &post.slug);
+        let f_out = format!("{}/{}.html", &posts_dir, &post.meta.slug);
         fs::write(f_out, rendered_post)?;
     }
 

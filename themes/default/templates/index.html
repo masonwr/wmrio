@@ -1,15 +1,12 @@
 {% extends "base.html" %}
 {% block content %}
-<div>
-    {% for post in posts %}
-    <a href="posts/{{post.slug}}.html">
-        <h2>
+{% for post in posts %}
+<article>
+    <h2>
+        <a href="posts/{{post.slug}}.html">
             {{post.title}}
-        </h2>
-    </a>
-    <p>
-        {{post.content}}
-    </p>
-    {% endfor%}
-</div>
+        </a>
+    </h2>
+</article>
+{% endfor %}
 {% endblock content %}

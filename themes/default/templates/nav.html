@@ -1,0 +1,14 @@
+<nav class="dt w-100 border-box pa3 ph5-ns">
+    <h2 class="ttu tracked">
+        <a class="link dark-gray" href="/">
+            {{site_title}}
+        </a>
+    </h2>
+    <div class="dtc v-mid w-75 tr">
+        {% for nav in top_nav %}
+        <a class="link dim dark-gray f6 f5-ns dib mr3 mr4-ns" href="{{nav.link}}" title="{{nav.display}}">
+            {{nav.display}}
+        </a>
+        {% endfor %}
+    </div>
+</nav>

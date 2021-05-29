@@ -1,10 +1,11 @@
+use serde::Serialize;
 use std::path::Path;
 use std::{env, fs, io};
 use tera::{Context, Tera};
 
 use crate::{content::Site, path_manager::PathManager};
 
-pub fn build_site(site: &Site) -> anyhow::Result<()> {
+pub fn site(site: &Site) -> anyhow::Result<()> {
     // set up working dir, simplifies paths a bit
     let pm = PathManager::from_env()?;
     env::set_current_dir(&pm.project_root)?;
@@ -20,12 +21,16 @@ pub fn build_site(site: &Site) -> anyhow::Result<()> {
     let posts_dir = format!("{}/posts", &pm.out_path().display());
     fs::create_dir_all(&posts_dir)?;
 
+    let mut base_context = Context::from_serialize(&site)?;
+    base_context.extend(Context::from_serialize(parse_theme_config())?);
+
     // render posts
     for post in &site.posts {
-        let mut context = Context::from_serialize(post)?;
-        context.insert("site_title", &site.site_title);
+        // this works as long as the posts all have the same fields
+        // because we are overwriting the keys
+        base_context.extend(Context::from_serialize(post)?);
 
-        let rendered_post = tera.render("post.html", &context)?;
+        let rendered_post = tera.render("post.html", &base_context)?;
 
         let f_out = format!("{}/{}.html", &posts_dir, &post.slug);
         fs::write(f_out, rendered_post)?;
@@ -33,13 +38,38 @@ pub fn build_site(site: &Site) -> anyhow::Result<()> {
 
     // render index.html
     let out_index = format!("{}/index.html", pm.out_path().display());
-    let rendered_index = tera.render("index.html", &Context::from_serialize(&site)?)?;
+    let rendered_index = tera.render("index.html", &base_context)?;
     fs::write(out_index, rendered_index)?;
 
     // cp static asset folder
     copy_dir_all(&pm.theme_static_path(), pm.out_static_path())?;
 
     Ok(())
+}
+
+#[derive(Serialize)]
+pub struct ThemeConfig {
+    pub top_nav: Vec<NavItem>,
+}
+#[derive(Serialize)]
+pub struct NavItem {
+    pub display: String,
+    pub link: String,
+}
+
+fn parse_theme_config() -> ThemeConfig {
+    ThemeConfig {
+        top_nav: vec![
+            NavItem {
+                display: "Github".into(),
+                link: "https://github.com/masonwr".into(),
+            },
+            NavItem {
+                display: "About".into(),
+                link: "about".into(),
+            },
+        ],
+    }
 }
 
 fn copy_dir_all(src: impl AsRef<Path>, dst: impl AsRef<Path>) -> io::Result<()> {

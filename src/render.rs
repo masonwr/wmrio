@@ -67,7 +67,7 @@ fn parse_theme_config() -> ThemeConfig {
             },
             NavItem {
                 display: "About".into(),
-                link: "about".into(),
+                link: "/posts/about.html".into(),
             },
         ],
     }

@@ -17,15 +17,14 @@ pub fn site(site: &Site) -> anyhow::Result<()> {
     let mut tera = Tera::new(&template_path)?;
     tera.autoescape_on(vec![]);
 
-    // create dirs if they do not exist
-    // TODO this should also be derived from the site perhaps
-    let posts_dir = format!("{}/posts", &pm.out_path().display());
-    fs::create_dir_all(&posts_dir)?;
-
     let mut base_context = Context::from_serialize(&site)?;
     base_context.extend(Context::from_serialize(parse_theme_config())?);
 
+    // TODO: DRY THIS OUT
+
     // render posts
+    let posts_dir = format!("{}/posts", &pm.out_path().display());
+    fs::create_dir_all(&posts_dir)?;
     for post in &site.posts {
         // this works as long as the posts all have the same fields
         // because we are overwriting the keys
@@ -34,6 +33,20 @@ pub fn site(site: &Site) -> anyhow::Result<()> {
         let rendered_post = tera.render("post.html", &base_context)?;
 
         let f_out = format!("{}/{}.html", &posts_dir, &post.meta.slug);
+        fs::write(f_out, rendered_post)?;
+    }
+
+    // render pages
+    let pages_dir = format!("{}/pages", &pm.out_path().display());
+    fs::create_dir_all(&pages_dir)?;
+    for page in &site.pages {
+        // this works as long as the posts all have the same fields
+        // because we are overwriting the keys
+        base_context.extend(Context::from_serialize(page)?);
+
+        let rendered_post = tera.render("page.html", &base_context)?;
+
+        let f_out = format!("{}/{}.html", &pages_dir, &page.meta.slug);
         fs::write(f_out, rendered_post)?;
     }
 
@@ -67,7 +80,7 @@ fn parse_theme_config() -> ThemeConfig {
             },
             NavItem {
                 display: "About".into(),
-                link: "/posts/about.html".into(),
+                link: "/pages/about.html".into(),
             },
         ],
     }

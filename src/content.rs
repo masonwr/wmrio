@@ -10,21 +10,25 @@ pub fn parse_site() -> anyhow::Result<Site> {
 
     // parse posts
     let posts_dir = format!("{}/content/posts", &pm.project_root);
-    let posts: Vec<Post> = parse_posts(&posts_dir)?;
+    let posts: Vec<Content> = parse_content(&posts_dir)?;
+
+    let pages_dir = format!("{}/content/pages", &pm.project_root);
+    let pages = parse_content(&pages_dir)?;
 
     let site = Site {
         site_title: "wmr.io".into(),
         posts,
+        pages,
     };
 
     Ok(site)
 }
 
-fn parse_posts(posts_dir: &str) -> anyhow::Result<Vec<Post>> {
+fn parse_content(posts_dir: &str) -> anyhow::Result<Vec<Content>> {
     let mut parsing_opts = ComrakOptions::default();
     parsing_opts.extension.front_matter_delimiter = Some(FRONT_MATTER_DELIMETER.to_owned());
 
-    let mut posts: Vec<Post> = vec![];
+    let mut posts: Vec<Content> = vec![];
 
     for file in fs::read_dir(posts_dir)? {
         let file = file?;
@@ -40,7 +44,7 @@ fn parse_posts(posts_dir: &str) -> anyhow::Result<Vec<Post>> {
 
         // parse markdown
         let content = markdown_to_html(&content, &parsing_opts);
-        posts.push(Post { meta, content });
+        posts.push(Content { meta, content });
     }
 
     Ok(posts)
@@ -76,7 +80,8 @@ fn get_yaml<'a>(text: &'a str) -> Option<&'a str> {
 #[derive(Serialize)]
 pub struct Site {
     pub site_title: String,
-    pub posts: Vec<Post>,
+    pub posts: Vec<Content>,
+    pub pages: Vec<Content>,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -94,7 +99,7 @@ pub enum Status {
 }
 
 #[derive(Serialize)]
-pub struct Post {
+pub struct Content {
     pub meta: ContentMeta,
     pub content: String,
 }

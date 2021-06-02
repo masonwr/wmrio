@@ -26,7 +26,9 @@ impl PathManager {
     }
 
     pub fn out_path(&self) -> PathBuf {
-        PathBuf::from("target/site")
+        let mut out_path = PathBuf::from(&self.project_root);
+        out_path.push("target/site");
+        out_path
     }
 
     pub fn out_static_path(&self) -> PathBuf {

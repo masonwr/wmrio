@@ -1,12 +1,12 @@
-<nav class="dt w-100 border-box pa3 ph5-ns">
-    <h2 class="ttu tracked">
-        <a class="link dark-gray" href="/">
+<nav class="font-san grid grid-cols-1 md:grid-cols-2 gap-4 pb-5">
+    <h1>
+        <a class="text-4xl" href="/">
             {{site_title}}
         </a>
-    </h2>
-    <div class="dtc v-mid w-75 tr">
+    </h1>
+    <div class="flex md:justify-end space-x-10">
         {% for nav in top_nav %}
-        <a class="link dim dark-gray f6 f5-ns dib mr3 mr4-ns" href="{{nav.link}}" title="{{nav.display}}">
+        <a class="font-mono text-xl" href="{{nav.link}}" title="{{nav.display}}">
             {{nav.display}}
         </a>
         {% endfor %}

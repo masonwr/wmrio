@@ -16,7 +16,7 @@ pub fn parse_site() -> anyhow::Result<Site> {
     let pages = parse_content(&pages_dir)?;
 
     let site = Site {
-        site_title: "wmr.io".into(),
+        site_title: "wmrio".into(),
         posts,
         pages,
     };

@@ -1,12 +1,12 @@
-<nav class="font-san grid grid-cols-1 md:grid-cols-2 gap-4 pb-5">
+<nav class="font-san grid grid-cols-1 md:grid-cols-2 gap-4 md:pb-8">
     <h1>
-        <a class="text-4xl" href="/">
+        <a class="text-4xl font-bold text-gray-600" href="/">
             {{site_title}}
         </a>
     </h1>
-    <div class="flex md:justify-end space-x-10">
+    <div class="flex md:justify-end space-x-10 items-end ">
         {% for nav in top_nav %}
-        <a class="font-mono text-xl" href="{{nav.link}}" title="{{nav.display}}">
+        <a class="font-mono text-xl align-bottom" href="{{nav.link}}" title="{{nav.display}}">
             {{nav.display}}
         </a>
         {% endfor %}

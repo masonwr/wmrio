@@ -1,12 +1,25 @@
 {% extends "base.html" %}
 {% block content %}
-{% for post in posts %}
-<article>
-    <h2>
-        <a href="posts/{{post.meta.slug}}.html">
-            {{post.meta.title}}
-        </a>
-    </h2>
-</article>
-{% endfor %}
+<div class="max-w-xl">
+    <p>
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras porttitor molestie dolor, et ultrices nisl
+        pharetra sit amet. Nam non pellentesque ligula, ac egestas quam. Suspendisse semper lorem eu dolor fermentum
+        lacinia sed sit amet felis. Integer gravida mi ut rutrum gravida. Lorem ipsum dolor sit amet, consectetur
+        adipiscing elit. Cras porttitor molestie dolor, et ultrices nisl pharetra sit amet. Nam non pellentesque ligula,
+        ac egestas quam. Suspendisse semper lorem eu dolor fermentum lacinia sed sit amet felis.
+    </p>
+    <h3 class="py-3 text-4xl">posts</h3>
+    {% for post in posts %}
+    <article class="">
+        <h2 class="py-4">
+            <div>
+                2021-06-03
+            </div>
+            <a class="text-2xl" href="posts/{{post.meta.slug}}.html">
+                {{post.meta.title}}
+            </a>
+        </h2>
+    </article>
+    {% endfor %}
+</div>
 {% endblock content %}

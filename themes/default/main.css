@@ -1,4 +1,11 @@
 /* ./your-css-folder/styles.css */
+
 @tailwind base;
+@layer base {
+    .markdown h1 {
+        @apply text-4xl pb-3;
+    }
+}
+
 @tailwind components;
 @tailwind utilities;
